@@ -58,7 +58,6 @@ class ChannelController{
         
         try{
             await this.fetchChannelData(request, response, next);
-            await this.fetchEditChannelData(request, response, next);
         } catch(error) {
             response.locals.errors.general = [error.message];
         }
@@ -225,23 +224,25 @@ class ChannelController{
         try{
             var channelData         = response.locals.channels;
             var currentUser         = request.session.user
-            channelData.users       = await AraDTUserModel.getUsers(currentUser.uid);
+            var users               = await AraDTUserModel.getUsers();
+            channelData.users = [];
             //Ugly work around to suit edit channel form.
-            channelData.users = channelData.users.map(user => {
-                return {
-                    id: user.uid,
-                    name: user.displayName,
-                    image: user.photoURL
-                };
-              });
-            channelData.subscribed  = await AraDTChannelModel.getSubscribedChannels();
-            channelData.owned       = await AraDTChannelModel.getOwnedChannels();
+            users.forEach((user) => {
+                if (currentUser.uid != user.uid) {
+                    channelData.users.push({
+                        id: user.uid,
+                        name: user.displayName,
+                        image: user.photoURL
+                    });
+                }
+            });
+            channelData.subscribed  = await AraDTChannelModel.getSubscribedChannels(request);
+            channelData.owned       = await AraDTChannelModel.getOwnedChannels(request);
             return;
         } catch(error) {
             throw error;
         }
     }
-
 
     /**
      * Gets channel to be edited, including owned and subscribed

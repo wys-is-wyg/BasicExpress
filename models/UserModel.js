@@ -131,7 +131,7 @@ class UserModel{
     };
 
     /**
-     * Asynchronous function that wraps Firebase.auth().updateProfile()
+     * Asynchronous function that updates the user doc
      * On success, adds updated user to session
      * On failure, throws error to calling method
      * 
@@ -141,23 +141,21 @@ class UserModel{
      * @throws {Error}
      */
     update =  async (request, response) => {
-
-        // Extract form data from request
-        var updatedUser = {
-            email: request.body.email,
-            displayName: request.body.displayName
-        }
-
-        // Check is email is valid and the user has a display name
-        var { valid, errors } = AraDTValidator.updateUserValid(updatedUser);
               
-        if (!valid) {
+        if (!request.body.displayName) {
             // Validation failed, so return errors
-            throw new Error(errors);
+            throw new Error('You need to include a display name');
+        } else if (request.body.email) {
+            // Email updating no longer allowed
+            throw new Error('Updating email has now been deprecated');
         } else {
-
             var currentUser = request.session.user;
-            updatedUser.uid = currentUser.uid;
+
+            // Extract form data from request
+            var updatedUser = {
+                uid: currentUser.uid,
+                displayName: request.body.displayName,
+            }
 
             // If form includes new avatar, upload this
             if (request.files) {
@@ -172,7 +170,7 @@ class UserModel{
                 request.session.user = user.data();
                 response.locals.user = request.session.user;
             } else {
-                // Now users matching these credentials
+                // No users matching these credentials
                 throw new Error('No users match these credentials');
             }
         }
@@ -274,7 +272,7 @@ class UserModel{
      * 
      * @returns {Array}    array of all registered users
      */
-    getUsers = async(currentUserId = false) => {
+    getUsers = async() => {
         var users = [];
         
         var users = [];
@@ -291,9 +289,6 @@ class UserModel{
             .catch((error) => {
                 console.log('Error fetching channel data:' + error.message);
             });
-            
-            console.log("################# getUsers Data #####################");
-            console.log(users);
         return users;
     }
 

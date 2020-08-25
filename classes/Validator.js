@@ -61,27 +61,6 @@ class Validator{
     }
 
     /**
-     * Checks that the form has an email
-     * and a display name 
-     * 
-     * @param {Object}      data        Form submmisssion data
-     * 
-     * @returns {Object}    valid boolean and error array
-     */
-    updateUserValid(data) {
-        let errors = [];
-
-        if (this.isEmpty(data.email)) errors.push('You need to add an email');
-        if (this.isEmpty(data.displayName)) errors.push('You need to include a display name');
-    
-        return {
-            errors,
-            valid: errors.length === 0 ? true : false
-        };
-
-    }
-
-    /**
      * Checks email conforms to email requirements
      * 
      * @param {string}      email
