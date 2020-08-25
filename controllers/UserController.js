@@ -11,14 +11,41 @@
 class UserController{
 
     /**
-     * Instantiates class, calls method to set required session variables 
-     * for the user and assigns middleware to routes
+     * Instantiates class, calls method to set 
+     * required session variables 
+     * for the user
      */
     constructor(){
-
         // Set current user variables before each request
         this.setVariables();
+    }
 
+    /**
+     * Assigns middleware to add User to
+     * UserModel, request.session, 
+     * and response.locals variables
+     */
+    setVariables(){
+        AraDTApp.use(async function(request, response, next) {
+
+            console.log("################# Controller Session Data #####################");
+            console.log(request.session);
+            // Check if user logged in for this session
+            if (request.session.user) {
+                console.log("################# Controller Session User Data #####################");
+                console.log(request.session.user);
+                response.locals.user = request.session.user;
+                response.locals.loggedin = true;
+            }
+            // Pass on to next middleware
+            next();
+        });
+    }
+        
+    /**
+     * Assigns middleware to routes
+     */
+    addRoutes(){
         // Add all routing middleware for user endpoints
         AraDTApp.get('/register', this.signup);
         AraDTApp.post('/register', this.register);
@@ -26,31 +53,6 @@ class UserController{
         AraDTApp.get('/logout', this.logout);
         AraDTApp.get('/account', this.getAccount);
         AraDTApp.post('/account', this.updateAccount);
-        AraDTApp.post('/password', this.updatePassword);
-    }
-
-    /**
-     * Assigns middleware to add Firebase.auth().currentUser to
-     * UserModel, request.session, and response.locals variables
-     */
-    setVariables(){
-        AraDTApp.use(async function(request, response, next) {
-            // Chesk if user logged in for this session
-            if (request.session.token) {
-                // We have a logged in user, so request user from Firebase
-                var currentUser = await AraDTDatabase.firebase.auth().currentUser;
-                if (currentUser != null) {
-                    // User returned, so add to session and local variables
-                    request.session.user = currentUser;
-                    response.locals.user = request.session.user;
-                    AraDTUserModel.setUser(currentUser);
-                    response.locals.loggedin = true;
-                    response.locals.user = currentUser;
-                }
-            }
-            // Pass on to next middleware
-            next();
-        });
     }
 
     signup = async (request, response) => {
@@ -123,46 +125,18 @@ class UserController{
 
     updateAccount =  async (request, response) => {
 
-        var currentUser = AraDTUserModel.getCurrentUser();
-        if (currentUser) {
-            try{
-                await AraDTUserModel.update(request, response)
-                    .then(() => {
-                        response.locals.errors.profile = ['Your details have been updated'];
-                        response.render('account');
-                    }).catch((error) => {
-                        response.locals.errors.profile = [error.message];
-                        response.render('account');
-                    });
-            } catch(errors) {
-                response.locals.errors.profile = errors;
-                response.render('account');
-            }
-        } else {
-            this.logout(request, response);
-        }
-
-    };
-    
-    updatePassword = async (request, response) => {
-
-        var currentUser = AraDTUserModel.getCurrentUser();
-        if (currentUser) {
-            try{
-                await AraDTUserModel.updatePassword(request, response)
-                    .then(() => {
-                        response.locals.errors.password = ['Your password has been updated'];
-                        response.render('account');
-                    }).catch((error) => {
-                        response.locals.errors.password = [error.message];
-                        response.render('account');
-                    });
-            } catch(errors) {
-                response.locals.errors.password = errors;
-                response.render('account');
-            }
-        } else {
-            this.logout(request, response);
+        try{
+            await AraDTUserModel.update(request, response)
+                .then(() => {
+                    response.locals.errors.profile = ['Your details have been updated'];
+                    response.render('account');
+                }).catch((error) => {
+                    response.locals.errors.profile = [error.message];
+                    response.render('account');
+                });
+        } catch(errors) {
+            response.locals.errors.profile = errors;
+            response.render('account');
         }
 
     };

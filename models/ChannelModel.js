@@ -147,7 +147,6 @@ class ChannelModel{
         }
     }
 
-
     /**
      * buildChannel method fetches validated 
      * channel data from POST request object
@@ -158,7 +157,7 @@ class ChannelModel{
      */
     buildChannel = async (request) => {
         
-        var currentUser = await AraDTDatabase.firebase.auth().currentUser;
+        var currentUser = request.session.user;
         var slugName = AraDTValidator.makeSlug(request.body.name);
         var image = '';
         var avatar = (request.files && request.files.avatar) ? request.files.avatar : false;
@@ -196,7 +195,7 @@ class ChannelModel{
      */
     deleteChannel = async(channelId) => {
 
-        var currentUser = await AraDTDatabase.firebase.auth().currentUser;
+        var currentUser = request.session.user;
         var channelDoc = AraDTDatabase.storage.collection('channels').doc(channelId);
         await channelDoc.get()
             .then((datum) => {
@@ -219,7 +218,7 @@ class ChannelModel{
      */
     getOwnedChannels = async () => {
 
-        var currentUser = await AraDTDatabase.firebase.auth().currentUser;
+        var currentUser = request.session.user;
         var channels = [];
         await AraDTDatabase.storage.collection('channels')
             .where('owner', '==', currentUser.uid)
@@ -249,7 +248,7 @@ class ChannelModel{
      */
     getSubscribedChannels = async () => {
 
-        var currentUser = await AraDTDatabase.firebase.auth().currentUser;
+        var currentUser = request.session.user;
         var channels = [];
 
         //Filter by channels containing user id

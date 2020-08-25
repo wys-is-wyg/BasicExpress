@@ -47,8 +47,10 @@ class Router{
      * e.g. Users, Channels, Messages
      */
     addControllers() {
-        var userController = new UserController();
         var channelController = new ChannelController();
+        var userController = new UserController();
+        channelController.addRoutes();
+        userController.addRoutes();
     }
 
     // Renders home page ./views/index.ejs

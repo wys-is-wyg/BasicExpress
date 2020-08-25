@@ -10,6 +10,10 @@ class ChannelController{
 
     constructor(){
         this.setVariables();
+    }
+    
+    addRoutes(){
+        this.setVariables();
         AraDTApp.get('/channels', this.fetchChannels);
         AraDTApp.get('/channel/:channelId', this.showChannel);
         AraDTApp.post('/channels/add', this.addChannel);
@@ -220,7 +224,7 @@ class ChannelController{
     fetchChannelData = async (request, response, next) => {
         try{
             var channelData         = response.locals.channels;
-            var currentUser         = await AraDTDatabase.firebase.auth().currentUser;
+            var currentUser         = request.session.user
             channelData.users       = await AraDTUserModel.getUsers(currentUser.uid);
             channelData.subscribed  = await AraDTChannelModel.getSubscribedChannels();
             channelData.owned       = await AraDTChannelModel.getOwnedChannels();
