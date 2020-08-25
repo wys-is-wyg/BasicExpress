@@ -26,7 +26,7 @@ var passwordErrors = ("password" in  locals.errors) ? locals.errors.password : f
 					</div>
 					<div class="form-group">
 						<label class="control-label">Email Address</label>
-						<input id="update-email" type="email" class="form-control" name="email" placeholder="Email" value="<%= locals.user.email %>" readonly>
+						<input id="update-email" type="email" class="form-control" name="email" placeholder="Email" value="<%= locals.user.email %>">
 					</div>
 					<div id="avatar" class="col-md-3 col-6 p-0">
 						<div class="avatar-window">
@@ -44,27 +44,6 @@ var passwordErrors = ("password" in  locals.errors) ? locals.errors.password : f
 					</div>
 					<div class="form-group submit">
 						<button id="update" type="submit" class="btn btn-primary">Update</button>
-					</div>
-				</form>
-				<p>&nbsp;</p>
-				<h2>Your Password</h2>
-				<% if (passwordErrors) { %>
-					<% passwordErrors.forEach(function(error) { %>
-						<p><div class="alert alert-primary" role="alert"><%= error %></div></p>
-					<% }) %>
-				<% } %>
-				<hr>
-				<form action="/password" method="post">
-					<div class="form-group">
-						<label class="control-label">Password</label>
-						<input id="update-password" type="password" class="form-control" name="password" placeholder="Password">
-					</div>
-					<div class="form-group">
-						<label class="control-label">Password Confirmation</label>
-						<input type="password" class="form-control" name="passwordConfirm" placeholder="Password Confirmation">
-					</div>
-					<div class="form-group submit">
-						<button id="update" type="submit" class="btn btn-primary">Change Your Password</button>
 					</div>
 				</form>
 			</main>

@@ -28,12 +28,10 @@ class UserController{
     setVariables(){
         AraDTApp.use(async function(request, response, next) {
 
-            console.log("################# Controller Session Data #####################");
+            console.log("################# Session Data #####################");
             console.log(request.session);
             // Check if user logged in for this session
             if (request.session.user) {
-                console.log("################# Controller Session User Data #####################");
-                console.log(request.session.user);
                 response.locals.user = request.session.user;
                 response.locals.loggedin = true;
             }

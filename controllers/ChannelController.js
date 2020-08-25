@@ -226,6 +226,14 @@ class ChannelController{
             var channelData         = response.locals.channels;
             var currentUser         = request.session.user
             channelData.users       = await AraDTUserModel.getUsers(currentUser.uid);
+            //Ugly work around to suit edit channel form.
+            channelData.users = channelData.users.map(user => {
+                return {
+                    id: user.uid,
+                    name: user.displayName,
+                    image: user.photoURL
+                };
+              });
             channelData.subscribed  = await AraDTChannelModel.getSubscribedChannels();
             channelData.owned       = await AraDTChannelModel.getOwnedChannels();
             return;

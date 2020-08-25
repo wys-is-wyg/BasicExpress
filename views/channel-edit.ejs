@@ -1,10 +1,9 @@
 <%- include('partials/header'); %> 
 <% 
-var users = locals.channels.users
-var channelErrors = locals.errors.channels
-var generalErrors = ("general" in  channelErrors) ? channelErrors.general : false
-var addErrors = ("add" in  channelErrors) ? channelErrors.add : false
-var deleteErrors = ("delete" in  channelErrors) ? channelErrors.delete : false 
+var inUsers = locals.channels.editChannel.inUsers
+var outUsers = locals.channels.editChannel.outUsers
+var editChannel = locals.channels.editChannel.channel
+var editErrors = ("edit" in  locals.errors.channels) ? locals.errors.channels.edit : false 
 %>
 			<div id="main">
 				<div class="container-fluid">
@@ -13,22 +12,17 @@ var deleteErrors = ("delete" in  channelErrors) ? channelErrors.delete : false
 							<%- include('partials/channel-sidebar'); %> 
 						</div>  
 						<main role="main" class="col-md-8 col-sm-6">
-							<h2>Add A New Channel</h2>
+							<h2>Edit Channel</h2>
 							<hr>
-							<% if (generalErrors) { %>
-								<% generalErrors.forEach(function(error) { %>
+							<% if (editErrors) { %>
+								<% editErrors.forEach(function(error) { %>
 									<p><div class="alert alert-primary" role="alert"><%= error %></div></p>
 								<% }) %>
 							<% } %>
-							<% if (addErrors) { %>
-								<% addErrors.forEach(function(error) { %>
-									<p><div class="alert alert-primary" role="alert"><%= error %></div></p>
-								<% }) %>
-							<% } %>
-							<form id="channel-create-form" action="/channels/add" method="post" enctype="multipart/form-data">
+							<form id="channel-create-form" action="/channels/edit/<%= editChannel.id %>" method="post" enctype="multipart/form-data">
 								<div class="form-group">
 									<label class="control-label">Display Name</label>
-									<input id="update-display-name" type="text" class="form-control" name="name" placeholder="Display Name" value="">
+									<input id="update-display-name" type="text" class="form-control" name="name" placeholder="Display Name" value="<%= editChannel.name %>">
 								</div>
 								<div class="form-group">
 									<label class="check-input-group" for="public">
@@ -37,6 +31,14 @@ var deleteErrors = ("delete" in  channelErrors) ? channelErrors.delete : false
 									</label>
 									<span class="align-label-middle">Public Channel</span>
 								</div>
+								<% if (editChannel.image) { %>
+								<div id="avatar" class="col-md-3 col-6 p-0">
+									<div class="avatar-window">
+										<img src="<%= editChannel.image %>" alt="Your Profile Image">
+										<input type="hidden" name="avatar" value="<%= editChannel.image %>">
+									</div>
+								</div>
+								<% } %>
 								<div class="form-group no-submit">
 									<label class="control-label">Add an Image</label>
 									<div class="input-group-append">
@@ -51,8 +53,22 @@ var deleteErrors = ("delete" in  channelErrors) ? channelErrors.delete : false
 										<h4>Add Users</h4>
 										<div id="user-window">
 											<div id="user-window-channel">
-												<% if (users) { %>
-													<% users.forEach(function(user) { %>
+												<% if (inUsers) { %>
+													<% inUsers.forEach(function(user) { %>
+														<div class="user-check">
+															<label class="user-check-input-group" for="user<%= user.id %>">
+																<input class="user-check-input" id="user<%= user.id %>" type="checkbox" name="users" value="<%= user.id %>" checked="checked">
+																<div class="avatar-window">
+																	<img src="<%= user.image %>" alt="<%= user.name %>">
+																</div>
+																<span class="user-checkbox-hover"></span>
+															</label>
+															<p><%= user.name %></p>
+														</div>
+													<% }) %>
+												<% } %>
+												<% if (outUsers) { %>
+													<% outUsers.forEach(function(user) { %>
 														<div class="user-check">
 															<label class="user-check-input-group" for="user<%= user.id %>">
 																<input class="user-check-input" id="user<%= user.id %>" type="checkbox" name="users" value="<%= user.id %>">
@@ -64,15 +80,13 @@ var deleteErrors = ("delete" in  channelErrors) ? channelErrors.delete : false
 															<p><%= user.name %></p>
 														</div>
 													<% }) %>
-												<% } else { %>
-													<p><div class="alert alert-primary" role="alert">There are no people in here yet!</div></p>
-												<% }  %>
+												<% } %>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div class="form-group submit">
-									<button id="update" type="submit" class="btn btn-primary">Create</button>
+									<button id="update" type="submit" class="btn btn-primary">Update</button>
 								</div>
 							</form>
 						</main>

@@ -1,0 +1,38 @@
+<%- include('partials/header'); %> 
+<% 
+var editChannel = locals.channels.editChannel.channel
+%> 
+			<div id="main">
+				<div class="container-fluid">
+				<div class="row">
+					<div id="sidebar" class="col-md-3">
+						<%- include('partials/channel-sidebar'); %> 
+					</div>  
+					<main role="main" class="col-md-9">
+						<h1><%= editChannel.name %></h1>
+						<%- include('partials/chat'); %>             
+						<div id="message">
+							<div class="input-group">
+								<textarea id="message-box" class="form-control" aria-label="With textarea" placeholder="Type your message here"></textarea>
+								<div class="input-group-append">
+									<span class="input-group-text">
+										<i class="fas fa-paperclip"></i>
+										<i class="fas fa-link"></i>
+										<i class="fas fa-smile"></i>
+										<i class="fas fa-paper-plane"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div id="notices"></div>
+						<div id="user">
+							<input type="hidden" id="displayName" name="displayName" value="<%= locals.user.displayName %>">
+							<input type="hidden" id="userId" name="userId" value="<%= locals.user.uid %>">
+							<input type="hidden" id="channelId" name="channelId" value="<%= editChannel.id %>">
+							<input type="hidden" id="channelName" name="channelName" value="<%= editChannel.name %>">
+						</div>
+					</main>
+				</div> <!-- end .row --> 
+				</div><!-- end .container-fluid -->
+			</div><!-- end #main -->
+<%- include('partials/footer'); %>

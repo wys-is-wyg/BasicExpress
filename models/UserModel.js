@@ -276,28 +276,24 @@ class UserModel{
      */
     getUsers = async(currentUserId = false) => {
         var users = [];
-        await AraDTDatabase.firebaseAdmin.auth().listUsers()
+        
+        var users = [];
+        await AraDTDatabase.storage.collection('users')
+            .get()
             .then((data) => {
-                // Add users to the array
-                data.users.forEach((datum) => {
-                    //Exclude current user if passed to getUsers request
-                    if (!currentUserId ||
-                        datum.uid != currentUserId) {
-                            users.push({
-                                id: datum.uid,
-                                name: datum.displayName,
-                                image: datum.photoURL,
-                            });
-                    }
+                data.forEach((user) => {
+                    users.push(user.data());
                 });
                 if (users.length == 0) {
                     users = false;
                 }
             })
-            .catch(function(error) {
-                //Do not throw error, just log the issue
-                console.log('Error fetching user data:', error);
+            .catch((error) => {
+                console.log('Error fetching channel data:' + error.message);
             });
+            
+            console.log("################# getUsers Data #####################");
+            console.log(users);
         return users;
     }
 
