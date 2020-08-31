@@ -181,9 +181,6 @@ class ChannelModel{
             users: users,
             createdAt: new Date().toISOString()
         }
-        
-        console.log("################# channelData #####################");
-        console.log(channelData);
 
         return channelData;
     }
@@ -227,8 +224,6 @@ class ChannelModel{
             .orderBy('createdAt', 'desc')
             .get()
             .then((data) => {
-                console.log("################# get channel Data #####################");
-                console.log(data);
                 data.forEach((datum) => {
                     channels.push(this.getChannelData(datum));
                 });

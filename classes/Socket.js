@@ -7,25 +7,26 @@
 class Socket{
 
     constructor(){
+
+        this.channel = '';
+
         AraDTIO.on('connection', async (socket) => {
-            console.log('Connected succesfully to the socket ...');
+            
+            // once a client has connected, we expect to get a ping from them saying what room they want to join
             socket.on('join', (data) => {
+                console.log('############## JOIN ALERT ####################');
                 console.log(data);
-                socket.broadcast.to(data.channelId).emit('alert', `${data.displayName} has joined the channel!`);
+                socket.join(data.channel.uid);
+                socket.to(data.channel.uid).emit('alert', `${data.user.name} has joined the channel ${data.channel.name}!`);
             });
-            socket.on('typing', async () => {
-                console.log('Typing ...');
-                try{
-                    var currentUser = await AraDTDatabase.firebase.auth().currentUser;
-                    socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.`});
-                    console.log(currentUser.displayName);
-                    return;
-                } catch(error) {
-                    throw error;
-                }
+            socket.on('typing', async (data) => {
+                console.log('############## TYPE SERVER ####################');
+                console.log(data);
+                socket.to(data.channel.uid).emit('typing', data.user.uid);
             });
-            socket.on('disconnect', function(){
-                console.log('Disconnected succesfully to the socket ...');
+            socket.on('disconnect', function(data){
+                console.log('############## DISCONNECT ALERT ####################');
+                console.log(data);
             });
         });
     }

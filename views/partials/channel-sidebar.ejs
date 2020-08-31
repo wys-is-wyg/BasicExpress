@@ -56,11 +56,12 @@ var participants = (locals.channel && locals.channel.inUsers) ? locals.channel.i
                             <h4>Channel Members <i class="fas fas fa-user float-right"></i></h4>
                         </li>
                     <% participants.forEach(function(user) { %>
-                        <li class="list-group-item channel-list-item d-flex justify-content-between align-items-center">
+                        <li id="user<%= user.id %>" class="list-group-item channel-list-item d-flex align-items-center">
                             <div class="avatar-window">
                                 <img src="<%= user.image %>" alt="<%= user.name %>">
                             </div>
-                            <p><%= user.name %></p>
+                            <p><%= user.name %> <small class="text-muted d-none"> typing... </small></p>
+                            
                         </li>
                     <% }) %>
                     </ul>
