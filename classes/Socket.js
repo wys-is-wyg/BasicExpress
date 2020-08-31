@@ -8,8 +8,6 @@ class Socket{
 
     constructor(){
 
-        this.channel = '';
-
         AraDTIO.on('connection', async (socket) => {
             
             // once a client has connected, we expect to get a ping from them saying what room they want to join
@@ -30,28 +28,6 @@ class Socket{
             });
         });
     }
-    
-	msgChannel(msgTxt, chatUser){
-		var time = 0;
-		var msg = `
-			<div class="media out">
-				<div class="user">
-					<img src="${chatUser.photoURL}" alt="Image">
-					<p>${chatUser.displayName}</p>
-				</div>
-				<div class="media-body">
-					${msgTxt}
-					<i class="fas fa-ellipsis-h" 
-						data-toggle="popover" 
-						data-html="true" 
-						data-placement="bottom" 
-						data-content="<i class='fas fa-edit'></i><i class='fas fa-trash-alt'></i>">
-					</i>
-				</div>
-				<small class="text-muted">${time}</small>
-			</div>
-		`;
-	}
 
 }
 module.exports = Socket;

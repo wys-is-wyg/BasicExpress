@@ -1,13 +1,3 @@
-var user = {
-	uid: "",
-	image: "",
-	name: ""
-}
-var channel = {
-	uid: "",
-	name: ""
-}
-
 $(document).ready(function(){
 
 	var msgBox = $("#message-box");
@@ -17,7 +7,9 @@ $(document).ready(function(){
 
 	if (msgBox.length) {
 
-		channel.uid 		= $('#channelId').val();
+		var user = $('#chat-info').data('user');
+		var channel = $('#chat-info').data('channel');
+
 		//make connection
 	 	var socket = io.connect('http://localhost:3000');
 		socket.on('connect', function() {
@@ -39,10 +31,8 @@ $(document).ready(function(){
 			timeoutTyping = setTimeout(hideTyping, 2000);
 		});
 
-		socket.on('message', (msgTxt) => {
-			console.log('############## MSG ####################');
-			console.log(msgTxt);
-			msgChannel(msgTxt);
+		socket.on('messageIn', (msgData) => {
+			addMsg(msgData);
 		});
 
 		//Emit typing
@@ -52,7 +42,14 @@ $(document).ready(function(){
 
 		//Submit msg
 		$('#postMsg').bind('click', () => {
-			socket.emit('message', msgBox.val(), user);
+			var msgOut = {
+				user: user,
+				channel: channel,
+				msg: msgBox.val(),
+				direction: 'out',
+			}
+			socket.emit('messageOut', msgOut);
+			addMsg(msgOut);
 		})
 	}
 
@@ -64,11 +61,6 @@ $(document).ready(function(){
 	}
 
 	function startChat(){
-		user.uid 			= $('#userId').val();
-		user.image	 		= $('#photoURL').val();
-		user.name 			= $('#displayName').val();
-		channel.uid 		= $('#channelId').val();
-		channel.name 		= $('#channelName').val();
 		var msgTxt 			= `Welcome to ${channel.name}, ${user.name }!`;
 		alertChannel(msgTxt);
 	}
@@ -79,16 +71,15 @@ $(document).ready(function(){
 		$('#chat .alert').delay(2000).fadeOut(600, function() { $(this).remove(); }); 
 	}
 
-	function msgChannel(msgTxt){
-		var time = 0;
+	function addMsg(msgData){
 		var msg = `
-			<div class="media out">
+			<div class="media ${msgData.direction}" data-time="${msgData.time}">
 				<div class="user">
-					<img src="${user.image}" alt="Image">
-					<p>${user.name}</p>
+					<img src="${msgData.user.image}" alt="Image">
+					<p>${msgData.user.name}</p>
 				</div>
 				<div class="media-body">
-					${msgTxt}
+					${msgData.msg}
 					<i class="fas fa-ellipsis-h" 
 						data-toggle="popover" 
 						data-html="true" 
@@ -96,7 +87,7 @@ $(document).ready(function(){
 						data-content="<i class='fas fa-edit'></i><i class='fas fa-trash-alt'></i>">
 					</i>
 				</div>
-				<small class="text-muted">${time}</small>
+				<small class="text-muted">Just now</small>
 			</div>
 		`;
 		$('#chat').append(msg);

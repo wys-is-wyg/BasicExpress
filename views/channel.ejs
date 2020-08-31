@@ -11,7 +11,6 @@ var editChannel = locals.channel.channel
 					<main role="main" class="col-md-9">
 						<h1><%= editChannel.name %></h1>
 						<div id="chat">
-							
 						</div>           
 						<div id="message">
 							<div class="input-group">
@@ -26,14 +25,10 @@ var editChannel = locals.channel.channel
 								</div>
 							</div>
 						</div>
-						<div id="notices"></div>
-						<div id="user">
-							<input type="hidden" id="displayName" name="displayName" value="<%= locals.user.displayName %>">
-							<input type="hidden" id="userId" name="userId" value="<%= locals.user.uid %>">
-							<input type="hidden" id="userAvatar" name="userAvatar" value="<%= locals.user.photoURL %>">
-							<input type="hidden" id="channelId" name="channelId" value="<%= editChannel.id %>">
-							<input type="hidden" id="channelName" name="channelName" value="<%= editChannel.name %>">
-						</div>
+						<input 
+							data-user='{"uid":"<%= locals.user.uid %>","name":"<%= locals.user.displayName %>","image":"<%= locals.user.photoURL %>"}'
+							data-channel='{"uid":"<%= editChannel.id %>","name":"<%= editChannel.name %>"}'
+							type="hidden" id="chat-info">
 					</main>
 				</div> <!-- end .row --> 
 				</div><!-- end .container-fluid -->
