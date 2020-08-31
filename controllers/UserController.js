@@ -26,15 +26,7 @@ class UserController{
      * and response.locals variables
      */
     setVariables(){
-        AraDTApp.use(async function(request, response, next) {
-
-            console.log("################# Session Data #####################");
-            console.log(request.session);
-            // Check if user logged in for this session
-            if (request.session.user) {
-                response.locals.user = request.session.user;
-                response.locals.loggedin = true;
-            }
+        AraDTApp.use(async (request, response, next) => {
             // Pass on to next middleware
             next();
         });

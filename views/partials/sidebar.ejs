@@ -1,18 +1,18 @@
-<%  var channels = ("channels" in  locals) ? locals.channels : false %>
+<%  var allChannels = ("all" in  locals.channels) ? locals.channels.all : false %>
 
 <div id="all-channels" class="user-channels">
-    <% if (channels) { %>
+    <% if (allChannels) { %>
         <ul class="list-group">
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <h4>All Channels <i class="fas fas fa-user float-right"></i></h4>
+                <h4>All Channels <i class="fas fas fa-user float-right d-none d-lg-inline-block"></i></h4>
             </li>
-        <% channels.forEach(function(channel) { %>
+        <% allChannels.forEach(function(channel) { %>
             <li class="list-group-item channel-list-item d-flex justify-content-between align-items-center">
-                <div class="avatar-window">
+                <div class="avatar-window d-none d-lg-inline-block">
                     <img src="<%= channel.image %>" alt="<%= channel.name %>">
                 </div>
                 <a href="/channel/<%= channel.id %>/"><%= channel.name %></a>
-                <span class="badge badge-primary badge-pill" data-placement="top" title="<%= channel.users.length %> users..."><%= channel.users.length %></span>
+                <span class="badge badge-primary badge-pill d-none d-lg-inline-block" data-placement="top" title="<%= channel.users.length %> users..."><%= channel.users.length %></span>
             </li>
         <% }) %>
         </ul>

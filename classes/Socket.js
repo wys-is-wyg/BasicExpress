@@ -17,11 +17,17 @@ class Socket{
                 socket.join(data.channel.uid);
                 socket.to(data.channel.uid).emit('alert', `${data.user.name} has joined the channel ${data.channel.name}!`);
             });
+
             socket.on('typing', async (data) => {
-                console.log('############## TYPE SERVER ####################');
-                console.log(data);
                 socket.to(data.channel.uid).emit('typing', data.user.uid);
             });
+
+            socket.on('messageOut', async (data) => {
+                console.log('############## MSG OUT ####################');
+                console.log(data);
+                socket.to(data.channel.uid).emit('messageIn', data);
+            });
+
             socket.on('disconnect', function(data){
                 console.log('############## DISCONNECT ALERT ####################');
                 console.log(data);

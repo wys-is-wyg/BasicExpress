@@ -17,11 +17,8 @@ class ChannelController{
      */
     setVariables(){
         AraDTApp.use(async (request, response, next) => {
-            response.locals.channels = {};
             response.locals.channel = {};
-            if (request.session.user) {
-                await this.fetchChannelsData(request, response, next);
-            }
+            await this.fetchChannelsData(request, response, next);
             if (!response.locals.errors){
                 response.locals.errors = {};
             }
@@ -235,27 +232,31 @@ class ChannelController{
      * adding of users in channel creation} request 
      */
     fetchChannelsData = async (request, response, next) => {
-        try{
-            var currentUser         = request.session.user
-            var users               = await AraDTUserModel.getUsers();
-            response.locals.channels.users = [];
-            //Ugly work around to suit edit channel form.
-            users.forEach((user) => {
-                if (currentUser.uid != user.uid) {
-                    response.locals.channels.users.push({
-                        id: user.uid,
-                        name: user.displayName,
-                        image: user.photoURL
-                    });
-                }
-            });
-            response.locals.channels.subscribed  = await AraDTChannelModel.getSubscribedChannels(request);
-            response.locals.channels.owned       = await AraDTChannelModel.getOwnedChannels(request);
-            console.log("################# Channels Data #####################");
-            console.log(response.locals.channels);
-            return;
-        } catch(error) {
-            throw error;
+        var currentUser = request.session.user
+        if (currentUser) {
+            try{
+                var users = await AraDTUserModel.getUsers();
+                response.locals.channels.users = [];
+                //Ugly work around to suit edit channel form.
+                users.forEach((user) => {
+                    if (currentUser.uid != user.uid) {
+                        response.locals.channels.users.push({
+                            id: user.uid,
+                            name: user.displayName,
+                            image: user.photoURL
+                        });
+                    }
+                });
+                response.locals.channels.subscribed  = await AraDTChannelModel.getSubscribedChannels(request);
+                response.locals.channels.owned       = await AraDTChannelModel.getOwnedChannels(request);
+                console.log("################# Subscribed Channels Data #####################");
+                console.log(response.locals.channels.subscribed);
+                console.log("################# Owned Channels Data #####################");
+                console.log(response.locals.channels.owned);
+                return;
+            } catch(error) {
+                throw error;
+            }
         }
     }
 

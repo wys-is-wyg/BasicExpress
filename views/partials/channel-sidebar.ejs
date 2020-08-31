@@ -8,17 +8,17 @@ var participants = (locals.channel && locals.channel.inUsers) ? locals.channel.i
                 <% if (owned) { %>
                     <ul class="list-group">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <h4>Your Channels <i class="fas fas fa-user float-right"></i></h4>
+                            <h4>Your Channels <i class="fas fas fa-user float-right d-none d-lg-inline-block"></i></h4>
                         </li>
                     <% owned.forEach(function(channel) { %>
                         <li class="list-group-item channel-list-item d-flex justify-content-between align-items-center">
-                            <div class="avatar-window">
+                            <div class="avatar-window d-none d-lg-inline-block">
                                 <img src="<%= channel.image %>" alt="<%= channel.name %>">
                             </div>
                             <a href="/channel/<%= channel.id %>/"><%= channel.name %></a>
                             <a href="/channels/edit/<%= channel.id %>/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                             <a href="/channels/delete/<%= channel.id %>/"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                            <span class="badge badge-primary badge-pill" data-placement="top" title="<%= channel.users.length %> users..."><%= channel.users.length %></span>
+                            <span class="badge badge-primary badge-pill d-none d-lg-inline-block" data-placement="top" title="<%= channel.users.length %> users..."><%= channel.users.length %></span>
                         </li>
                     <% }) %>
                     </ul>
@@ -31,16 +31,15 @@ var participants = (locals.channel && locals.channel.inUsers) ? locals.channel.i
                 <% if (subscribed) { %>
                     <ul class="list-group">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <h4>Subscribed Channels <i class="fas fas fa-user float-right"></i></h4>
+                            <h4>Subscribed Channels <i class="fas fas fa-user float-right d-none d-lg-inline-block"></i></h4>
                         </li>
                     <% subscribed.forEach(function(channel) { %>
                         <li class="list-group-item channel-list-item d-flex justify-content-between align-items-center">
-                            <div class="avatar-window">
+                            <div class="avatar-window d-none d-lg-inline-block">
                                 <img src="<%= channel.image %>" alt="<%= channel.name %>">
                             </div>
                             <a href="/channel/<%= channel.id %>/"><%= channel.name %></a>
-                            <a href="#/"><i class="fas fa-sign-out-alt"></i></a>
-                            <span class="badge badge-primary badge-pill" data-placement="top" title="<%= channel.users.length %> users..."><%= channel.users.length %></span>
+                            <span class="badge badge-primary badge-pill d-none d-lg-inline-block" data-placement="top" title="<%= channel.users.length %> users..."><%= channel.users.length %></span>
                         </li>
                     <% }) %>
                     </ul>
@@ -53,15 +52,14 @@ var participants = (locals.channel && locals.channel.inUsers) ? locals.channel.i
                 <% if (participants) { %>
                     <ul class="list-group">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <h4>Channel Members <i class="fas fas fa-user float-right"></i></h4>
+                            <h4>Channel Members <i class="fas fas fa-user float-right d-none d-lg-inline-block"></i></h4>
                         </li>
                     <% participants.forEach(function(user) { %>
                         <li id="user<%= user.id %>" class="list-group-item channel-list-item d-flex align-items-center">
-                            <div class="avatar-window">
+                            <div class="avatar-window d-none d-lg-inline-block">
                                 <img src="<%= user.image %>" alt="<%= user.name %>">
                             </div>
                             <p><%= user.name %> <small class="text-muted d-none"> typing... </small></p>
-                            
                         </li>
                     <% }) %>
                     </ul>

@@ -10,11 +10,11 @@ $(document).ready(function(){
 		var user = $('#chat-info').data('user');
 		var channel = $('#chat-info').data('channel');
 
-		//make connection
 	 	var socket = io.connect('http://localhost:3000');
 		socket.on('connect', function() {
 			if (!joined) {
-				startChat();
+				var msgTxt = `Welcome to ${channel.name}, ${user.name }!`;
+				alertChannel(msgTxt);
 				socket.emit('join', {user: user, channel: channel});
 				joined = true;
 			}
@@ -35,21 +35,20 @@ $(document).ready(function(){
 			addMsg(msgData);
 		});
 
-		//Emit typing
 		msgBox.bind('keypress', () => {
 			socket.emit('typing', {user: user, channel: channel});
 		})
 
-		//Submit msg
 		$('#postMsg').bind('click', () => {
-			var msgOut = {
+			var msgData = {
 				user: user,
 				channel: channel,
 				msg: msgBox.val(),
 				direction: 'out',
 			}
-			socket.emit('messageOut', msgOut);
-			addMsg(msgOut);
+			addMsg(msgData);
+			msgData.direction = 'in d-flex flex-row-reverse'
+			socket.emit('messageOut', msgData);
 		})
 	}
 
@@ -58,11 +57,6 @@ $(document).ready(function(){
 			$('#participants small').addClass('d-none');
 		}
 		typing = false;
-	}
-
-	function startChat(){
-		var msgTxt 			= `Welcome to ${channel.name}, ${user.name }!`;
-		alertChannel(msgTxt);
 	}
 	
 	function alertChannel(alertTxt){
