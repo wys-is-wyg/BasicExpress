@@ -2,6 +2,7 @@
 var channels = locals.channels
 var owned = ("owned" in  channels) ? channels.owned : false
 var subscribed = ("subscribed" in  channels) ? channels.subscribed : false
+var participants = (locals.channel && locals.channel.inUsers) ? locals.channel.inUsers : false
 %>
             <div id="owned-channels" class="user-channels">
                 <% if (owned) { %>
@@ -37,7 +38,7 @@ var subscribed = ("subscribed" in  channels) ? channels.subscribed : false
                             <div class="avatar-window">
                                 <img src="<%= channel.image %>" alt="<%= channel.name %>">
                             </div>
-                            <a href="/channel/<%= channel.slug %>/"><%= channel.name %></a>
+                            <a href="/channel/<%= channel.id %>/"><%= channel.name %></a>
                             <a href="#/"><i class="fas fa-sign-out-alt"></i></a>
                             <span class="badge badge-primary badge-pill" data-placement="top" title="<%= channel.users.length %> users..."><%= channel.users.length %></span>
                         </li>
@@ -45,6 +46,26 @@ var subscribed = ("subscribed" in  channels) ? channels.subscribed : false
                     </ul>
                 <% } else { %>
                     <p><div class="alert alert-primary" role="alert">Make some friends on here and join their channels!</div></p>
+                <% }  %>
+            </div>
+            <p>&nbsp;</p>
+            <div id="participants" class="user-channels">
+                <% if (participants) { %>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <h4>Channel Members <i class="fas fas fa-user float-right"></i></h4>
+                        </li>
+                    <% participants.forEach(function(user) { %>
+                        <li class="list-group-item channel-list-item d-flex justify-content-between align-items-center">
+                            <div class="avatar-window">
+                                <img src="<%= user.image %>" alt="<%= user.name %>">
+                            </div>
+                            <p><%= user.name %></p>
+                        </li>
+                    <% }) %>
+                    </ul>
+                <% } else { %>
+                    <p><div class="alert alert-primary" role="alert">Make some friends on here and add them to your channels!</div></p>
                 <% }  %>
             </div>
             <p>&nbsp;</p>

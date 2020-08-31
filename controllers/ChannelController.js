@@ -12,22 +12,16 @@ class ChannelController{
         this.setVariables();
     }
     
-    addRoutes(){
-        this.setVariables();
-        AraDTApp.get('/channels', this.fetchChannels);
-        AraDTApp.get('/channel/:channelId', this.showChannel);
-        AraDTApp.post('/channels/add', this.addChannel);
-        AraDTApp.get('/channels/delete/:channelId', this.deleteChannel);
-        AraDTApp.get('/channels/edit/:channelId', this.readChannel);
-        AraDTApp.post('/channels/edit/:channelId', this.updateChannel);
-    }
-    
     /**
      * Transfer variables from sessions to locals.
      */
     setVariables(){
         AraDTApp.use(async (request, response, next) => {
             response.locals.channels = {};
+            response.locals.channel = {};
+            if (request.session.user) {
+                await this.fetchChannelsData(request, response, next);
+            }
             if (!response.locals.errors){
                 response.locals.errors = {};
             }
@@ -40,10 +34,38 @@ class ChannelController{
             next();
         });
     }
+    
+    addRoutes(){
+        AraDTApp.get('/channels', this.fetchChannels);
+        AraDTApp.get('/channel/:channelId', this.showChannel);
+        AraDTApp.post('/channels/add', this.addChannel);
+        AraDTApp.get('/channels/delete/:channelId', this.deleteChannel);
+        AraDTApp.get('/channels/edit/:channelId', this.readChannel);
+        AraDTApp.post('/channels/edit/:channelId', this.updateChannel);
+    }
 
-    // Ignore this :-)
     showChannel = async (request, response, next) => {
-        next();
+        
+        if (!request.session.token) {
+           response.redirect('/');
+        }
+
+        var channelId = request.params.channelId;
+        var errors = request.session.errors.channels;
+        
+        if (!channelId) {
+            errors.general = ['You need to specify a channel'];
+            response.redirect('/channels');
+        }
+        try{
+            await this.fetchChannelData(request, response, next);
+            response.locals.messages = await AraDTMessageModel.getMessages();
+        } catch(error) {
+            errors.general = [error.message];
+            response.redirect('/channels');
+        }
+
+        response.render('channel');
     }
 
     
@@ -54,12 +76,6 @@ class ChannelController{
         
         if (!request.session.token) {
            response.redirect('/');
-        }
-        
-        try{
-            await this.fetchChannelData(request, response, next);
-        } catch(error) {
-            response.locals.errors.general = [error.message];
         }
 
         response.render('channels');
@@ -125,7 +141,6 @@ class ChannelController{
         }
         try{
             await this.fetchChannelData(request, response, next);
-            await this.fetchEditChannelData(request, response, next);
         } catch(error) {
             errors.general = [error.message];
             response.redirect('/channels');
@@ -172,7 +187,6 @@ class ChannelController{
         }
         try{
             await this.fetchChannelData(request, response, next);
-            await this.fetchEditChannelData(request, response, next);
         } catch(error) {
             errors.edit = [error];
         }
@@ -220,24 +234,25 @@ class ChannelController{
      * Also includes list of users excluding current user to allow 
      * adding of users in channel creation} request 
      */
-    fetchChannelData = async (request, response, next) => {
+    fetchChannelsData = async (request, response, next) => {
         try{
-            var channelData         = response.locals.channels;
             var currentUser         = request.session.user
             var users               = await AraDTUserModel.getUsers();
-            channelData.users = [];
+            response.locals.channels.users = [];
             //Ugly work around to suit edit channel form.
             users.forEach((user) => {
                 if (currentUser.uid != user.uid) {
-                    channelData.users.push({
+                    response.locals.channels.users.push({
                         id: user.uid,
                         name: user.displayName,
                         image: user.photoURL
                     });
                 }
             });
-            channelData.subscribed  = await AraDTChannelModel.getSubscribedChannels(request);
-            channelData.owned       = await AraDTChannelModel.getOwnedChannels(request);
+            response.locals.channels.subscribed  = await AraDTChannelModel.getSubscribedChannels(request);
+            response.locals.channels.owned       = await AraDTChannelModel.getOwnedChannels(request);
+            console.log("################# Channels Data #####################");
+            console.log(response.locals.channels);
             return;
         } catch(error) {
             throw error;
@@ -249,13 +264,14 @@ class ChannelController{
      * Also includes list of users excluding current user to allow 
      * adding of users in channel creation} request 
      */
-    fetchEditChannelData = async (request, response, next) => {
+    fetchChannelData = async (request, response, next) => {
         try{
-            var channelData             = response.locals.channels;
-            var channelId               = request.params.channelId;
+            var channelId       = request.params.channelId;
             if (channelId) {
-                channelData.editChannel = await AraDTChannelModel.readChannel(channelId);
+                response.locals.channel     = await AraDTChannelModel.readChannel(channelId);
             }
+            console.log("################# Channel Data #####################");
+            console.log(response.locals.channel);
             return;
         } catch(error) {
             throw error;

@@ -40,7 +40,7 @@ class ChannelModel{
 
         //Fetch channel and see if it exists
         var channelDoc = AraDTDatabase.storage.collection('channels').doc(channelId);
-        var editChannel = {};
+        var channel = {};
         await channelDoc.get()
             .then((datum) => {
                 if (!datum.exists) {
@@ -48,7 +48,7 @@ class ChannelModel{
                     throw new Error(['This channel does not exist']);
                 } else {
                     //Get channel data
-                    editChannel = this.getChannelData(datum);
+                    channel = this.getChannelData(datum);
                 }
             })
             .catch((error) => {
@@ -63,18 +63,18 @@ class ChannelModel{
         await AraDTUserModel.getUsers()
             .then((data) => {
                 data.forEach((datum) => {
-                    if (!AraDTValidator.isEmptyObj(editChannel.users) 
-                        && editChannel.users.includes(datum.id)) {
+                    if (!AraDTValidator.isEmptyObj(channel.users) 
+                        && channel.users.includes(datum.uid)) {
                         inUsers.push({
-                            id: datum.id,
-                            name: datum.name,
-                            image: datum.image,
+                            id: datum.uid,
+                            name: datum.displayName,
+                            image: datum.photoURL,
                         });
                     } else {
                         outUsers.push({
-                            id: datum.id,
-                            name: datum.name,
-                            image: datum.image,
+                            id: datum.uid,
+                            name: datum.displayName,
+                            image: datum.photoURL,
                         });
                     }
                 });
@@ -85,7 +85,7 @@ class ChannelModel{
 
         //return all user data
         return{
-            editChannel,
+            channel,
             inUsers,
             outUsers
         }
