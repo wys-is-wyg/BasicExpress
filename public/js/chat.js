@@ -95,7 +95,7 @@ $(document).ready(function(){
 			socket.emit('typing', {user: user, channel: channel});
 		})
 
-		$('#message').bind('click', () => {
+		$('#post-messsage').bind('click', () => {
 			var date = new Date();
 			var msgData = {
 				user: user,
