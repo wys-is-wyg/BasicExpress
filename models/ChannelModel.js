@@ -36,7 +36,7 @@ class ChannelModel{
      * 
      * @returns {Object} channel data
      */
-    readChannel = async (channelId) => {
+    fetchChannel = async (channelId) => {
 
         //Fetch channel and see if it exists
         var channelDoc = AraDTDatabase.storage.collection('channels').doc(channelId);
@@ -58,13 +58,14 @@ class ChannelModel{
         //Create initial arrays of users who belong, and users who do not
         var inUsers = [];
         var outUsers = [];
+        var hasUsers = !AraDTValidator.isEmptyObj(channel.users);
         
         //Loop through all users and assign
         await AraDTUserModel.getUsers()
             .then((data) => {
                 data.forEach((datum) => {
-                    if (!AraDTValidator.isEmptyObj(channel.users) 
-                        && channel.users.includes(datum.uid)) {
+                    if (channel.owner == datum.uid ||  
+                        (hasUsers && channel.users.includes(datum.uid))) {
                         inUsers.push({
                             id: datum.uid,
                             name: datum.displayName,

@@ -269,7 +269,7 @@ class ChannelController{
         try{
             var channelId       = request.params.channelId;
             if (channelId) {
-                response.locals.channel     = await AraDTChannelModel.readChannel(channelId);
+                response.locals.channel     = await AraDTChannelModel.fetchChannel(channelId);
             }
             console.log("################# Channel Data #####################");
             console.log(response.locals.channel);

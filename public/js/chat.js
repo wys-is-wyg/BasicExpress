@@ -1,8 +1,62 @@
+var joined = false;
+var typing = false;
+
+function hideTyping() {
+	if (typing) {
+		$('#participants small').addClass('d-none');
+	}
+	typing = false;
+}
+
+function alertChannel(alertTxt){
+	var alert = `<div class="alert alert-primary" role="alert">${alertTxt}</div>`;
+	$('#chat').append(alert);
+	$('#chat .alert').delay(2000).fadeOut(600, function() { $(this).remove(); }); 
+}
+
+function addMsg(msgData){
+	var msg = `
+		<div class="media ${msgData.direction}" data-time="${msgData.time}">
+			<div class="user">
+				<img src="${msgData.user.image}" alt="Image">
+				<p>${msgData.user.name}</p>
+			</div>
+			<div class="media-body">
+				${msgData.msg}
+				<i class="fas fa-ellipsis-h" 
+					data-toggle="popover" 
+					data-html="true" 
+					data-placement="bottom" 
+					data-content="<i class='fas fa-edit'></i><i class='fas fa-trash-alt'></i>">
+				</i>
+			</div>
+			<small class="text-muted">Just now</small>
+		</div>
+	`;
+	$('#chat').append(msg);
+}
+
+function timeSince(timestamp) {
+	var date = new Date();
+	var timenow = date.getTime();
+	var milliseconds = Math.floor(timenow - timestamp);
+	var minutes = milliseconds / 60000;
+	if (minutes > 1) {
+		return Math.floor(minutes) + " minute(s) ago.";
+	}
+}
+
+function updateTime() {
+	var now = new Date();
+	$('.message').each(function() {
+		var time = $(this).data('time');
+		$(this).find('.time').html(window.timeSince(time));  
+	});      
+}
+
 $(document).ready(function(){
 
 	var msgBox = $("#message-box");
-	var joined = false;
-	var typing = false;
 	var timeoutTyping;
 
 	if (msgBox.length) {
@@ -40,51 +94,20 @@ $(document).ready(function(){
 		})
 
 		$('#postMsg').bind('click', () => {
+			var date = new Date();
 			var msgData = {
 				user: user,
 				channel: channel,
 				msg: msgBox.val(),
+				time: date.getTime(),
 				direction: 'out',
 			}
 			addMsg(msgData);
-			msgData.direction = 'in d-flex flex-row-reverse'
+			msgData.direction = 'in'
 			socket.emit('messageOut', msgData);
-		})
-	}
-
-	function hideTyping() {
-		if (typing) {
-			$('#participants small').addClass('d-none');
-		}
-		typing = false;
-	}
-	
-	function alertChannel(alertTxt){
-		var alert = `<div class="alert alert-primary" role="alert">${alertTxt}</div>`;
-		$('#chat').append(alert);
-		$('#chat .alert').delay(2000).fadeOut(600, function() { $(this).remove(); }); 
-	}
-
-	function addMsg(msgData){
-		var msg = `
-			<div class="media ${msgData.direction}" data-time="${msgData.time}">
-				<div class="user">
-					<img src="${msgData.user.image}" alt="Image">
-					<p>${msgData.user.name}</p>
-				</div>
-				<div class="media-body">
-					${msgData.msg}
-					<i class="fas fa-ellipsis-h" 
-						data-toggle="popover" 
-						data-html="true" 
-						data-placement="bottom" 
-						data-content="<i class='fas fa-edit'></i><i class='fas fa-trash-alt'></i>">
-					</i>
-				</div>
-				<small class="text-muted">Just now</small>
-			</div>
-		`;
-		$('#chat').append(msg);
+		});
+		
+		setInterval(updateTime, 5000);
 	}
 
 });
