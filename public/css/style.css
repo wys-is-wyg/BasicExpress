@@ -517,7 +517,13 @@ h1, h2, h3, h4 {
   margin-right: 2rem;
 }
 
-#chat .media .user img {
+#chat .media .user .avatar-window {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+}
+
+#chat .media .user .avatar-window img {
   border-radius: 90px;
 }
 

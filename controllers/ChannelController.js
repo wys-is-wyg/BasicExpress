@@ -54,13 +54,7 @@ class ChannelController{
             errors.general = ['You need to specify a channel'];
             response.redirect('/channels');
         }
-        try{
-            await this.fetchChannelData(request, response, next);
-            response.locals.messages = await AraDTMessageModel.getMessages();
-        } catch(error) {
-            errors.general = [error.message];
-            response.redirect('/channels');
-        }
+        await this.fetchChannelData(request, response, next);
 
         response.render('channel');
     }

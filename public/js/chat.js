@@ -18,7 +18,9 @@ function addMsg(msgData){
 	var msg = `
 		<div class="media ${msgData.direction}" data-time="${msgData.time}">
 			<div class="user">
-				<img src="${msgData.user.image}" alt="Image">
+				<div class="avatar-window">
+					<img src="${msgData.user.image}" alt="Image">
+				</div>
 				<p>${msgData.user.name}</p>
 			</div>
 			<div class="media-body">
@@ -93,7 +95,7 @@ $(document).ready(function(){
 			socket.emit('typing', {user: user, channel: channel});
 		})
 
-		$('#postMsg').bind('click', () => {
+		$('#message').bind('click', () => {
 			var date = new Date();
 			var msgData = {
 				user: user,
@@ -102,6 +104,7 @@ $(document).ready(function(){
 				time: date.getTime(),
 				direction: 'out',
 			}
+			msgBox.val('');
 			addMsg(msgData);
 			msgData.direction = 'in'
 			socket.emit('messageOut', msgData);

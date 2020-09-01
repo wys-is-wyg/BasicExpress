@@ -26,8 +26,13 @@
         .user{
             text-align: center;
             margin-right: 2rem;
-            img{
-                border-radius: 90px;
+            .avatar-window{
+                width: 90px;
+                height: 90px;
+                border-radius: 50%;
+                img{
+                    border-radius: 90px;
+                }
             }
             img, 
             p{
