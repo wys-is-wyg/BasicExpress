@@ -22,10 +22,11 @@ class Socket{
                 socket.to(data.channel.uid).emit('typing', data.user.uid);
             });
 
-            socket.on('messageOut', async (data) => {
+            socket.on('messageOut', async (msgData) => {
                 console.log('############## MSG OUT ####################');
-                console.log(data);
-                socket.to(data.channel.uid).emit('messageIn', data);
+                console.log(msgData);
+                socket.to(msgData.channel.uid).emit('messageIn', msgData);
+                this.addMessage(msgData);
             });
 
             socket.on('disconnect', function(data){
@@ -33,6 +34,39 @@ class Socket{
                 console.log(data);
             });
         });
+    }
+
+    /**
+     * addMessage method stores validated 
+     * Message data to Firebase as a new Message
+     * 
+     * @param {Object} request Express request object
+     * @param {Object} response Express response object
+     * 
+     * @throws {Object} Error std error class
+     */
+    addMessage = async (data) => {
+        
+        var msgData = {
+            user: data.user,
+            channel: data.channel,
+            userId: data.user.uid,
+            channelId: data.channel.uid,
+            msg: data.msg,
+            time: date.time
+        }
+        try {
+            //add new Message
+            await AraDTDatabase.storage.collection('messages')
+                .add(msgData)
+                .catch((error) => {
+                    throw Error(error);
+                });
+
+        } catch(error) {
+            console.log('############## SAVE MSG ERROR ####################');
+            console.log(error);
+        }
     }
 
 }

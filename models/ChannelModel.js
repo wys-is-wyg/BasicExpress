@@ -91,6 +91,35 @@ class ChannelModel{
             outUsers
         }
     }
+    
+    /**
+     * readMessage method retrieves last 10 messages
+     * 
+     * @param {string} MessageId Message to fetch from Firebase
+     * 
+     * @returns {Object} Message data
+     */
+    fetchMessages = async (channelId) => {
+
+        //Fetch message and see if it exists
+        var messages = {};
+        await AraDTDatabase.storage.collection('messages')
+            .where('channel', '==', channelId)
+            .orderBy('createdAt', 'desc')
+            .limit(10)
+            .get()
+            .then((datum) => {
+                if (!datum.exists) {
+                    //Channel does not exist
+                    throw new Error(['This channel does not exist']);
+                } else {
+
+                }
+            })
+            .catch((error) => {
+                throw error;
+            });
+    }
 
     /**
      * updateChannel method stores validated 

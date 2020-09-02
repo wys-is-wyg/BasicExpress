@@ -55,6 +55,7 @@ class ChannelController{
             response.redirect('/channels');
         }
         await this.fetchChannelData(request, response, next);
+        await this.fetchMessageData(request, response, next);
 
         response.render('channel');
     }
@@ -261,12 +262,29 @@ class ChannelController{
      */
     fetchChannelData = async (request, response, next) => {
         try{
-            var channelId       = request.params.channelId;
+            var channelId = request.params.channelId;
             if (channelId) {
-                response.locals.channel     = await AraDTChannelModel.fetchChannel(channelId);
+                response.locals.channel = await AraDTChannelModel.fetchChannel(channelId);
             }
             console.log("################# Channel Data #####################");
             console.log(response.locals.channel);
+            return;
+        } catch(error) {
+            throw error;
+        }
+    }
+
+    /**
+     * Gets messages to be displayed
+     */
+    fetchChannelData = async (request, response, next) => {
+        try{
+            var channelId = request.params.channelId;
+            if (channelId) {
+                response.locals.messages = await AraDTChannelModel.fetchMessages(channelId);
+            }
+            console.log("################# Channel Data #####################");
+            console.log(response.locals.messages);
             return;
         } catch(error) {
             throw error;
