@@ -5,7 +5,7 @@
 				color: #fff;
 			}
 		</style>
-		<% //ALL LOCALS DATA %>
+        <% //ALL LOCALS DATA %>
 		<% if (locals.errors) { %>
 		<% var errorData = JSON.stringify(locals.errors, null, 2); %>
 		<pre>Errors: <%= errorData %></pre>
@@ -21,6 +21,10 @@
 		<% if (locals.channel) { %>
 		<% var channel = JSON.stringify(locals.channel, null, 2); %>
 		<pre>Channel: <%= channel %></pre>
+		<% } %>
+		<% if (locals.messages) { %>
+		<% var messages = JSON.stringify(locals.messages, null, 2); %>
+		<pre>Messages: <%= messages %></pre>
 		<% } %>
 
 		<!-- end #app-container -->

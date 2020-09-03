@@ -10,7 +10,6 @@ class Socket{
 
         AraDTIO.on('connection', async (socket) => {
             
-            // once a client has connected, we expect to get a ping from them saying what room they want to join
             socket.on('join', (data) => {
                 console.log('############## JOIN ALERT ####################');
                 console.log(data);
@@ -36,15 +35,6 @@ class Socket{
         });
     }
 
-    /**
-     * addMessage method stores validated 
-     * Message data to Firebase as a new Message
-     * 
-     * @param {Object} request Express request object
-     * @param {Object} response Express response object
-     * 
-     * @throws {Object} Error std error class
-     */
     addMessage = async (data) => {
         
         var msgData = {

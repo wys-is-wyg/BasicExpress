@@ -43,7 +43,9 @@ function timeSince(timestamp) {
 	var timenow = date.getTime();
 	var milliseconds = Math.floor(timenow - timestamp);
 	var minutes = milliseconds / 60000;
-	if (minutes > 2) {
+	if (minutes > 60) {
+		return Math.floor(minutes/60) + " hour(s) ago.";
+	} else if (minutes > 2) {
 		return Math.floor(minutes) + " minutes ago.";
 	} else {
 		return "Just now."
