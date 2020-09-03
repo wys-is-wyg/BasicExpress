@@ -99,26 +99,35 @@ class ChannelModel{
      * 
      * @returns {Object} Message data
      */
-    fetchMessages = async (channelId) => {
+    fetchMessages = async (channelId, userId) => {
 
         //Fetch message and see if it exists
-        var messages = {};
+        var messages = [];
         await AraDTDatabase.storage.collection('messages')
-            .where('channel', '==', channelId)
-            .orderBy('createdAt', 'desc')
+            .where('channelId', '==', channelId)
+            .orderBy('time', 'desc')
             .limit(10)
             .get()
-            .then((datum) => {
-                if (!datum.exists) {
-                    //Channel does not exist
-                    throw new Error(['This channel does not exist']);
+            .then((data) => {
+                data.forEach((message) => {
+                    var message = message.data();
+                    message.direction = 'in'
+                    if (message.userId == userId) {
+                        message.direction = 'out'
+                    }
+                    messages.push(message);
+                });
+                if (messages.length == 0) {
+                    messages = false;
                 } else {
-
+                    messages.sort((a, b) => (a.time > b.time) ? 1 : -1);
                 }
             })
             .catch((error) => {
                 throw error;
             });
+
+        return messages;
     }
 
     /**
@@ -140,6 +149,7 @@ class ChannelModel{
     
             //Update channel
             var channelDoc = AraDTDatabase.storage.collection('channels').doc(channelId);
+            
             await channelDoc.update(updatedChannel)
                 .catch((error) => {
                     throw Error(error);

@@ -53,7 +53,7 @@ class Socket{
             userId: data.user.uid,
             channelId: data.channel.uid,
             msg: data.msg,
-            time: date.time
+            time: data.time
         }
         try {
             //add new Message

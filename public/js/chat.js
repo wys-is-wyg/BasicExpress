@@ -32,7 +32,7 @@ function addMsg(msgData){
 					data-content="<i class='fas fa-edit'></i><i class='fas fa-trash-alt'></i>">
 				</i>
 			</div>
-			<small class="text-muted">Just now</small>
+			<small class="text-muted time">Just now</small>
 		</div>
 	`;
 	$('#chat').append(msg);
@@ -43,16 +43,17 @@ function timeSince(timestamp) {
 	var timenow = date.getTime();
 	var milliseconds = Math.floor(timenow - timestamp);
 	var minutes = milliseconds / 60000;
-	if (minutes > 1) {
-		return Math.floor(minutes) + " minute(s) ago.";
+	if (minutes > 2) {
+		return Math.floor(minutes) + " minutes ago.";
+	} else {
+		return "Just now."
 	}
 }
 
 function updateTime() {
-	var now = new Date();
 	$('.message').each(function() {
 		var time = $(this).data('time');
-		$(this).find('.time').html(window.timeSince(time));  
+		$(this).find('.time').html(timeSince(time));  
 	});      
 }
 
@@ -62,6 +63,8 @@ $(document).ready(function(){
 	var timeoutTyping;
 
 	if (msgBox.length) {
+
+		updateTime();
 
 		var user = $('#chat-info').data('user');
 		var channel = $('#chat-info').data('channel');
