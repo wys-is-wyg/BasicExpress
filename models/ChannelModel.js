@@ -200,7 +200,10 @@ class ChannelModel{
         var slugName = AraDTValidator.makeSlug(request.body.name);
         var image = '';
         var avatar = (request.files && request.files.avatar) ? request.files.avatar : false;
-        var users = (request.body.users) ? request.body.users : {};
+        var users = (request.body.users) ? request.body.users : [];
+        if (!Array.isArray(users)) {
+            users = [users];
+        }
         
         if (avatar) {
             var { result, validExtension } = AraDTImageUpload.uploadImage(avatar, slugName);

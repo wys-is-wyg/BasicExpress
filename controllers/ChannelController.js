@@ -54,9 +54,15 @@ class ChannelController{
             errors.general = ['You need to specify a channel'];
             response.redirect('/channels');
         }
-        await this.fetchChannel(request, response, next);
-        await this.fetchMessages(request, response, next);
-
+        try {
+            await this.fetchChannel(request, response, next);
+            await this.fetchMessages(request, response, next);
+        } catch(error) {
+            console.log("################# Channel Error #####################");
+            console.log(error);
+            errors.general = error;
+            response.redirect('/channels');
+        }
         response.render('channel');
     }
 
@@ -262,9 +268,10 @@ class ChannelController{
             var channelId = request.params.channelId;
             if (channelId) {
                 response.locals.channel = await AraDTChannelModel.fetchChannel(channelId);
+                
+                console.log('############### fetchChannel Data ###########');
+                console.log(response.locals.channel);
             }
-            console.log("################# Channel Data #####################");
-            console.log(response.locals.channel);
             return;
         } catch(error) {
             throw error;

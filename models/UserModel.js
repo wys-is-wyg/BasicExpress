@@ -258,6 +258,10 @@ class UserModel{
         await AraDTDatabase.storage.collection('users')
             .doc(newUser.uid)
             .set(newUser)
+            .then(function(data) {
+                console.log('############### Add User Data ###########');
+                console.log(data);
+            })
             .catch((error) => {
                 throw Error(error);
             });
