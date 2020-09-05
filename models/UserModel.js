@@ -142,38 +142,87 @@ class UserModel{
      */
     update =  async (request, response) => {
               
-        if (!request.body.displayName) {
+        // Extract form data from request
+        var updatedUser = {
+            email: request.body.email,
+            displayName: request.body.displayName
+        }
+        var photoURL = false;
+
+        // Check is email is valid and the user has a display name
+        var { valid, errors } = AraDTValidator.updateUserValid(updatedUser);
+
+        if (!valid) {
             // Validation failed, so return errors
-            throw new Error('You need to include a display name');
-        } else if (request.body.email) {
-            // Email updating no longer allowed
-            throw new Error('Updating email has now been deprecated');
+            throw new Error(errors);
         } else {
-            var currentUser = request.session.user;
-
-            // Extract form data from request
-            var updatedUser = {
-                uid: currentUser.uid,
-                displayName: request.body.displayName,
-            }
-
             // If form includes new avatar, upload this
             if (request.files) {
-                updatedUser.photoURL = this.updateAvatar(request, currentUser.uid);
+                photoURL = this.updateAvatar(request, response);
             }
 
-            var userDoc = AraDTDatabase.storage.collection('users').doc(currentUser.uid);
-            var updateRef = await userDoc.update(updatedUser);
-            var user = await userDoc.get();
+            var currentUser = request.session.user;
+
+            // Firebase profile update call
             
-            if (user.exists) {
-                request.session.user = user.data();
-                response.locals.user = request.session.user;
-            } else {
-                // No users matching these credentials
-                throw new Error('No users match these credentials');
-            }
+            await AraDTDatabase.firebaseAdmin.auth().updateUser(currentUser.uid, updatedUser)
+                .then(async (userRecord) => {
+                    if (photoURL) {
+                        updatedUser.photoURL = photoURL;
+                    }
+                    var userDoc = AraDTDatabase.storage.collection('users').doc(currentUser.uid);
+                    var updateRef = await userDoc.update(updatedUser);
+                    var user = await userDoc.get();
+                    
+                    if (user.exists) {
+                        request.session.user = user.data();
+                        response.locals.user = request.session.user;
+                        request.session.save();
+                    } else {
+                        // No users matching these credentials
+                        throw new Error('No users match these credentials');
+                    }
+                })
+                .catch(function(error) {
+                    // Throw error from Firebase to calling method
+                    throw new Error(error);
+                });
         }
+    };
+
+    /**
+     * Asynchronous function that wraps Firebase.auth().updatePassword()
+     * On failure, throws error to calling method
+     * 
+     * @param {Object}      request       Express request object
+     * @param {Object}      response      Express response object
+     * 
+     * @throws {Error}
+     */
+    updatePassword = async (request, response) => {
+
+        // Extract form data from request
+        var updatedUser = {
+            password: request.body.password,
+            passwordConfirm: request.body.passwordConfirm
+        }
+        
+        // Check password is over 6 chars and matches passwordConfirm
+        var { valid, errors } = AraDTValidator.updatePasswordValid(updatedUser);
+            
+        var currentUser = request.session.user;
+
+        // Firebase profile update call
+        await AraDTDatabase.firebaseAdmin.auth().updateUser(currentUser.uid, updatedUser)
+            .then(async (userRecord) => {
+                console.log('############### update password userRecord ###########');
+                console.log(userRecord);
+            })
+            .catch(function(error) {
+                // Throw error from Firebase to calling method
+                throw new Error(error);
+            });   
+
     };
 
     /**
@@ -277,9 +326,9 @@ class UserModel{
      * @returns {Array}    array of all registered users
      */
     getUsers = async() => {
-        var users = [];
         
         var users = [];
+
         await AraDTDatabase.storage.collection('users')
             .get()
             .then((data) => {

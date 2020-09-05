@@ -43,6 +43,7 @@ class UserController{
         AraDTApp.get('/logout', this.logout);
         AraDTApp.get('/account', this.getAccount);
         AraDTApp.post('/account', this.updateAccount);
+        AraDTApp.post('/password', this.updatePassword);
     }
 
     signup = async (request, response) => {
@@ -149,6 +150,38 @@ class UserController{
                 response.redirect('/');
             });
     }
+
+    /**
+     * Asynchronous function that handles POST form submission to '/password'
+     * On success, redirects to '/account'
+     * Onfailure, redirects to '/account' with error message
+     * Requires the following POST form name fields:
+     * 
+     * @param {string}      request.body.password           password form field
+     * @param {string}      request.body.passwordConfirm    passwordConfirm form field
+     * 
+     * @returns {Object}    response.redirect object
+     */
+    updatePassword = async (request, response) => {
+
+        try{
+            await AraDTUserModel.updatePassword(request, response)
+                .then(() => {
+                    // updated password successful, so redirects to account
+                    request.session.errors.password = ['Your password has been updated'];
+                    response.redirect('/account');
+                }).catch((error) => {
+                    // updated password not succesfful, so keeps user on account and displays error
+                    request.session.errors.password = [error.message];
+                    response.redirect('/account');
+                });
+        } catch(errors) {
+            // Form has failed validation, so returns errors
+            request.session.errors.password = errors;
+            response.redirect('/account');
+        }
+
+    };
 
 }
 module.exports = UserController;
