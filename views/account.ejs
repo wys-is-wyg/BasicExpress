@@ -25,6 +25,10 @@ var passwordErrors = ("password" in  locals.errors) ? locals.errors.password : f
 						<label class="control-label">Display Name</label>
 						<input id="update-display-name" type="text" class="form-control" name="displayName" placeholder="Display Name" value="<%= locals.user.displayName %>">
 					</div>
+					<div class="form-group">
+						<label class="control-label">Email Address</label>
+						<input id="update-email" type="email" class="form-control" name="email" placeholder="Email" value="<%= locals.user.email %>">
+					</div>
 					<div id="avatar" class="col-md-3 col-6 p-0">
 						<div class="avatar-window">
 							<img src="<%= avatar %>" alt="Your Profile Image">
