@@ -156,12 +156,13 @@ class UserModel{
             // Validation failed, so return errors
             throw new Error(errors);
         } else {
-            // If form includes new avatar, upload this
-            if (request.files) {
-                photoURL = this.updateAvatar(request, response);
-            }
 
             var currentUser = request.session.user;
+            
+            // If form includes new avatar, upload this
+            if (request.files) {
+                photoURL = this.updateAvatar(request, currentUser.uid);
+            }
 
             // Firebase profile update call
             
